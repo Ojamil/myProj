@@ -13,7 +13,7 @@
 @end
 
 @implementation NewsDetailsViewController
-@synthesize state,capital,stateLabel, capitalLabel;
+@synthesize key,content,keyLabel, contentLabel;
 
 
 - (void)viewDidLoad
@@ -22,9 +22,9 @@
     
     [super viewDidLoad];
     
-    stateLabel.text = state;
+    keyLabel.text = key;
     
-    capitalLabel.text = capital;
+    contentLabel.text = content;
     
 }
 

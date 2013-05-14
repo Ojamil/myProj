@@ -8,14 +8,15 @@
 
 #import "NewsViewController.h"
 #import "NewsDetailsViewController.h"
-
+#import "NewsCellStyle.h"
 @interface NewsViewController ()
 - (void)loadVisiblePage;
 @end
 
 @implementation NewsViewController
 @synthesize photoList;
-@synthesize states,datasource;
+@synthesize keys;
+@synthesize datasource;
 @synthesize _scrollView,_pageControl;
 - (void)didReceiveMemoryWarning
 {
@@ -29,7 +30,7 @@
 {
     [self setupArray];
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
     //设置ScrollView的整体触摸与显示区域
     //注意 宽 高不要超过 320X480
     //否则会出现无法滚动的情况
@@ -49,31 +50,23 @@
     
     //在本类中代理scrollView的整体事件
     [_scrollView setDelegate:self];
-    
-    
-    
-    //如果你打开横向或纵向的滚动条，这里可以设置滚动条的风格
-    // UIScrollViewIndicatorStyleDefault, 默认风格
-    // UIScrollViewIndicatorStyleBlack,   黑色风格
-    // UIScrollViewIndicatorStyleWhite    白色风格
-    //[_scrollView setIndicatorStyle:UIScrollViewIndicatorStyleBlack]
-    
+  
+    //这里添加图片
     self.photoList = [NSArray arrayWithObjects:
-                      [UIImage imageNamed:@"BG@2x.png"],
-                      [UIImage imageNamed:@"BG@2x.png"],
-                      [UIImage imageNamed:@"BG@2x.png"],
-                      [UIImage imageNamed:@"BG@2x.png"],
+                      [UIImage imageNamed:@"Unknown.jpg"],
+                      [UIImage imageNamed:@"1.jpg"],
+                      [UIImage imageNamed:@"Unknown.jpg"],
+                      [UIImage imageNamed:@"1.jpg"],
                       nil];
     
     for (int i =0; i<photoList.count; i++)
     {
         
         //在这里给每一个ScrollView添加一个图片
-        UIImageView *imageView= [[UIImageView alloc] initWithFrame:CGRectMake(i * 320,0,320,440)];
+        UIImageView *imageView= [[UIImageView alloc] initWithFrame:CGRectMake(i * 320,0,320,189)];
         [imageView setImage: [photoList objectAtIndex:i]];
         //把每页需要显示的VIEW添加进ScrollerView中
         [_scrollView addSubview:imageView];
-        
        
     }
     
@@ -98,63 +91,60 @@
     // e.g. self.myOutlet = nil;
 }
 -(void)setupArray{
+    //obtain the rray
     
-    states = [[NSMutableDictionary alloc]init];
-    [states setObject:@"Lansing" forKey:@"Michigan"];
-    [states setObject:@"Sacremento" forKey:@"California"];
-    [states setObject:@"Albany" forKey:@"New York"];
-    [states setObject:@"Phoenix" forKey:@"Arizona"];
-    [states setObject:@"Tulsa" forKey:@"Oklahoma"];
+    keys = [[NSMutableDictionary alloc]init];
+    [keys setObject:@"content1" forKey:@"key1"];
+    [keys setObject:@"content2" forKey:@"key2"];
+    [keys setObject:@"content3" forKey:@"key3"];
     
-    datasource = [states allKeys];
+    datasource = [keys allKeys];
     
 }
 
 #pragma mark - table view
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    //#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return [states count];
+    return [keys count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"NewsCell";
-    UITableViewCell *cell = (UITableViewCell *) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-    }
+    static NSString *CellIdentifier = @"NewsCellIdentifier";
+    static BOOL nibsRegistered = NO;
+
+        UINib *nib = [UINib nibWithNibName:@"NewsCellStyle" bundle:nil];
+        [tableView registerNib:nib forCellReuseIdentifier:CellIdentifier];
+        nibsRegistered = YES;
     
-    //---------- CELL BACKGROUND IMAGE -----------------------------
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:cell.frame];
-    UIImage *image = [UIImage imageNamed:@"LightGrey@2x.png"];
-    imageView.image = image;
-    cell.backgroundView = imageView;
-    [[cell textLabel] setBackgroundColor:[UIColor clearColor]];
-    [[cell detailTextLabel] setBackgroundColor:[UIColor clearColor]];
     
-    cell.textLabel.text = [datasource objectAtIndex:indexPath.row];
+        NewsCellStyle *cell=[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        NSUInteger row = [indexPath row];
+        cell.titleLabel.text= [datasource objectAtIndex:row];
+        cell.subtitleLabel.text = [keys objectForKey:cell.titleLabel.text];
     
-    //Arrow 
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        return cell;
     
-    return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     NewsDetailsViewController *detail = [self.storyboard instantiateViewControllerWithIdentifier:@"NewsDetails"];
-    detail.state = [datasource objectAtIndex:indexPath.row];
-    detail.capital = [states objectForKey:detail.state];
+    detail.key = [datasource objectAtIndex:indexPath.row];
+    detail.content = [keys objectForKey:detail.key];
     [self.navigationController pushViewController:detail animated:YES];
     
 }
 
-//------------------TableView Cell Height------------------
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 45;
+    return 70;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -183,14 +173,11 @@
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
-#pragma mark - scroll view
+#pragma mark - scroll view page control
 - (void)changePage:(id)sender
 {
-    //得到当前页面的ID
     NSInteger page = [sender currentPage];
     self._pageControl.currentPage=page;
-    //在这里写你需要执行的代码
-    //......
 }
 
 

@@ -8,22 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NewsDetailsViewController : UIViewController
-{
+@interface NewsDetailsViewController : UIViewController{
     
-    NSString *state;
+    NSString *key;
     
-    NSString *capital;
+    NSString *content;
     
-    IBOutlet UILabel *stateLabel;
+    IBOutlet UILabel *keyLabel;
     
-    IBOutlet UILabel *capitalLabel;
+    IBOutlet UILabel *contentLabel;
     
 }
 
-@property (nonatomic, retain)NSString *state, *capital;
+@property (nonatomic, retain)NSString *key, *content;
 
-@property (nonatomic, retain)IBOutlet UILabel *stateLabel, *capitalLabel;
+@property (nonatomic, retain)IBOutlet UILabel *keyLabel, *contentLabel;
 
 @end
 

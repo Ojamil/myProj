@@ -9,6 +9,9 @@
 #import "NewsCellStyle.h"
 
 @implementation NewsCellStyle
+@synthesize newsTitle,newsSubtitle,titleLabel,subtitleLabel,clickLabel,clickNum;
+
+
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

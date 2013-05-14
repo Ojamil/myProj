@@ -1,19 +1,18 @@
 //
-//  ActivitiesDetailsViewController.m
+//  SelfDetailsViewController.m
 //  myProj
 //
-//  Created by sky on 13-4-29.
+//  Created by sky on 13-5-14.
 //
 //
 
-#import "ActivitiesDetailsViewController.h"
+#import "SelfDetailsViewController.h"
 
-@interface ActivitiesDetailsViewController ()
+@interface SelfDetailsViewController ()
 
 @end
 
-@implementation ActivitiesDetailsViewController
-@synthesize key,content,keyLabel,contentLabel;
+@implementation SelfDetailsViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,10 +27,6 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    keyLabel.text = key;
-    
-    contentLabel.text = content;
-
 }
 
 - (void)didReceiveMemoryWarning

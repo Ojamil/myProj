@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MainTabBarViewController : UITabBarController
+
+@class MainTabBarViewController;
+
+@protocol MainTabBarViewControllerDelegate <NSObject>
+
+@end
+
+@interface MainTabBarViewController : UIViewController
+
+@property (nonatomic, strong) id <MainTabBarViewControllerDelegate> delegate;
 
 @end

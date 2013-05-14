@@ -13,6 +13,7 @@
 @end
 
 @implementation SelfActivitiesDetailsViewController
+@synthesize key,content,keyLabel,contentLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SignUpViewController.h"
+#import "MainTabBarViewController.h"
 
-@interface LoginPageViewController : UIViewController
+@interface LoginPageViewController : UIViewController <SignUpViewControllerDelegate,MainTabBarViewControllerDelegate>
+@property (strong, nonatomic) IBOutlet UITextField *email;
+@property (strong, nonatomic) IBOutlet UITextField *password;
+
+@property (strong, nonatomic) UITabBarController *tabController;
+
+
 
 @end

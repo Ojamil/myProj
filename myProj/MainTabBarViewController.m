@@ -10,9 +10,11 @@
 
 @interface MainTabBarViewController ()
 
+
 @end
 
 @implementation MainTabBarViewController
+@synthesize delegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

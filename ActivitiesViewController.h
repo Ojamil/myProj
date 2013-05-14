@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ActivitiesCellStyle.h"
+#import "ActivitiesDetailsViewController.h"
+@interface ActivitiesViewController : UITableViewController<UITableViewDelegate, UITableViewDataSource>
 
-@interface ActivitiesViewController : UITableViewController
+@property(nonatomic, retain)NSMutableDictionary *keys;//key
+@property(nonatomic, retain)NSArray *datasource;//dataset
 
 @end
