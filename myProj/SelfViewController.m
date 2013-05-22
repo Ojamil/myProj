@@ -7,26 +7,19 @@
 //
 
 #import "SelfViewController.h"
+#import "SelfDetailsViewController.h"
+#import "Networking.h"
+#import "Photo.h"
 
 @interface SelfViewController ()
 
 @end
 
 @implementation SelfViewController
-@synthesize image,name,school,hour;
-@synthesize keys,datasource;
+@synthesize imageView,nameLabel,schoolLabel,hourLabel;
+@synthesize each,data;
+@synthesize tableView;
 
--(void)setupArray{
-    //obtain the rray
-    
-    keys = [[NSMutableDictionary alloc]init];
-    [keys setObject:@"content1" forKey:@"key1"];
-    [keys setObject:@"content2" forKey:@"key2"];
-    [keys setObject:@"content3" forKey:@"key3"];
-    
-    datasource = [keys allKeys];
-    
-}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -39,16 +32,61 @@
 
 - (void)viewDidLoad
 {
-    [self setupArray];
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"Unknown" ofType:@"jpg"];
-    UIImage* myImage= [UIImage imageWithContentsOfFile:path];
-    [image setImage:myImage];
-    name.text = @"Seffy";
-    school.text = @"SYSU";
-    hour.text = @"50";
-       [super viewDidLoad];
+    [super viewDidLoad];
     
-	// Do any additional setup after loading the view.
+    UIButton *rightButton = [[UIButton alloc] init];
+    rightButton.frame = CGRectMake(0,0,20,20);
+    [rightButton setBackgroundImage:[UIImage imageNamed: @"out.png"] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(LogOut:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
+    
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"ali" ofType:@"png"];
+    UIImage* myImage= [UIImage imageWithContentsOfFile:path];
+    [self.imageView setImage:myImage];
+    
+    
+    NSDictionary *user_dict = [localSQL getLocalUserInfo];
+    self.nameLabel.text = [user_dict objectForKey:@"uname"];
+    UIImage *image =  [Photo string2Image:[user_dict objectForKey:@"photo"]];
+    [self.imageView setImage:image];
+    
+    //获取已参加活动
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[user_dict objectForKey:@"uid"],@"uid",nil];//自己设计
+    Networking *net = [[Networking alloc]initWithPhp:@"get_joined_activity.php" method:@"POST" parameters:dict];
+    [net setJsonRequestForObject:self ifSuccess:@selector(success:) ifFailure:@selector(failure)];
+   
+    //获取公益时间
+    Networking *net1 = [[Networking alloc]initWithPhp:@"get_time.php" method:@"POST" parameters:dict];
+    [net1 setJsonRequestForObject:self ifSuccess:@selector(getTimeSuccess:) ifFailure:@selector(failure)];
+}
+
+- (void)getTimeSuccess:(id)JSON
+{
+    self.hourLabel.text = [JSON objectForKey:@"time"];
+}
+
+
+
+- (void)success:(id)JSON
+{
+    data=[[NSMutableArray alloc]init];
+    
+    NSArray* arr=[JSON allKeys];
+    
+    for(int i=0;i<[JSON count];i++)
+    {
+        NSDictionary* tmp = [JSON objectForKey:[arr objectAtIndex:i]];
+        
+        [data addObject:tmp];
+    }
+    [tableView reloadData];
+    tableView.delegate = self;
+    tableView.dataSource = self;
+}
+
+- (void) failure
+{
+    XYShowAlert(@"网络连接失败！");
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,15 +96,9 @@
 }
 
 - (void)viewDidUnload {
-    [self setName:nil];
-    [self setSchool:nil];
-    [self setHour:nil];
-    [self setImage:nil];
+
+    [self setTableView:nil];
     [super viewDidUnload];
-}
-- (IBAction)selfDetail:(id)sender
-{
-    
 }
 
 - (IBAction)LogOut:(id)sender
@@ -77,14 +109,16 @@
                            cancelButtonTitle:@"取消"
                            destructiveButtonTitle:@"确定"
                            otherButtonTitles:nil];
-    
     [actionSheet showInView:self.view];
     
 }
 
+
+
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex != [actionSheet cancelButtonIndex]) {
+        [localSQL deleteLocalUserInfo];
          UIStoryboard *board = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
         UIViewController *next = [board instantiateViewControllerWithIdentifier:@"LoginPage"];
         
@@ -102,9 +136,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
     // Return the number of rows in the section.
-    return [keys count];
+    return [data count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -119,20 +152,15 @@
     
     SelfActivitiesCellStyle *cell=[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     NSUInteger row = [indexPath row];
-    cell.titleLabel.text= [datasource objectAtIndex:row];
-    cell.subtitleLabel.text = [keys objectForKey:cell.titleLabel.text];
-    
-    
+    NSDictionary* tmp=[data objectAtIndex:row];
+    cell.titleLabel.text= [tmp objectForKey:@"aname"];
+    cell.subtitleLabel.text = [tmp objectForKey:@"abbs"];
+    cell.clickLabel.text = [tmp objectForKey:@"aclick"];
+    NSLog(@"tmp=%@",tmp);
     return cell;
     
     
 }
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 70;
-}
-
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -160,17 +188,35 @@
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
-
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
     SelfActivitiesDetailsViewController *detail = [self.storyboard instantiateViewControllerWithIdentifier:@"SelfActivitiesDetails"];
-    detail.key = [datasource objectAtIndex:indexPath.row];
-    detail.content = [keys objectForKey:detail.key];
+    NSDictionary *tmp=[data objectAtIndex:indexPath.row];
+    detail.key = [tmp objectForKey:@"aname"];
+    detail.content = [tmp objectForKey:@"aabs"];
     [self.navigationController pushViewController:detail animated:YES];
     
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 41;
+}
+
+- (IBAction)SelfDetail:(id)sender
+{
+    SelfDetailsViewController * detail = [self.storyboard instantiateViewControllerWithIdentifier:@"selfDetails"];
+    NSDictionary *mine = [localSQL getLocalUserInfo];
+    detail.name.text = [mine objectForKey:@"uname"];
+    detail.birthdate.text = [mine objectForKey:@"birthdate"];
+   // detail.city.text = [mine objectForKey:@"city"];
+    detail.email.text = [mine objectForKey:@"email"];
+  //detail.
+
+    [self.navigationController pushViewController:detail animated:YES];
 }
 
 @end

@@ -17,14 +17,20 @@
 
 
 - (void)viewDidLoad
-
 {
-    
     [super viewDidLoad];
     
     keyLabel.text = key;
-    
     contentLabel.text = content;
+    
+    UIButton *leftButton = [[UIButton alloc] init];
+    leftButton.frame = CGRectMake(0,0,20,20);
+    [leftButton setBackgroundImage:[UIImage imageNamed: @"back.png"] forState:UIControlStateNormal];
+    [leftButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];
+    
+    NSLog(@"%@",self.navigationItem);
+    self.navigationItem.title = @"活动详情";
     
 }
 
@@ -47,6 +53,10 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (IBAction)back:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

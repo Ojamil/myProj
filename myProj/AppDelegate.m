@@ -12,8 +12,35 @@
 
 @synthesize window = _window;
 
+-(void)customizeiPhoneTheme
+{
+    [[UIApplication sharedApplication]
+     setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:NO];
+    
+    UIImage *navBarImage = [UIImage imageNamed:@"navigationbar.png"];
+    [[UINavigationBar appearance] setBackgroundImage:navBarImage forBarMetrics:UIBarMetricsDefault];
+    
+    UIImage* tabBarBackground = [UIImage imageNamed:@"tabbar.png"];
+    [[UITabBar appearance] setBackgroundImage:tabBarBackground];
+    
+    [[UITabBar appearance] setSelectionIndicatorImage:[UIImage imageNamed:@"pressed.png"]];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [self customizeiPhoneTheme];
+    
+    //LoadingViewController *first = [[LoadingViewController alloc] init];
+    //[self.window addSubview:first.view];
+    
+    //self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    // Override point for customization after application launch.
+    //WelcomeViewController * first = [self.];
+    //self.window.rootViewController = first;
+    //[self.window makeKeyAndVisible];
+    
+    //[self.window addSubview:first.view];
+    
     // Override point for customization after application launch.
     return YES;
 }

@@ -21,7 +21,7 @@
 }
 
 @property (nonatomic, retain)NSString *key, *content;
-
+- (IBAction)back:(id)sender;
 @property (nonatomic, retain)IBOutlet UILabel *keyLabel, *contentLabel;
 
 @end

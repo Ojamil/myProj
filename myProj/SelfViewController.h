@@ -12,15 +12,17 @@
 @interface SelfViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate>
 
 
-@property(nonatomic, retain)NSMutableDictionary *keys;//key
-@property(nonatomic, retain)NSArray *datasource;//dataset
+@property(nonatomic, retain)NSDictionary *each;//key
+@property(nonatomic, retain)NSMutableArray *data;//dataset
 
-@property (strong, nonatomic) IBOutlet UIImageView *image;
-@property (strong, nonatomic) IBOutlet UILabel *name;
-@property (strong, nonatomic) IBOutlet UILabel *school;
-@property (strong, nonatomic) IBOutlet UILabel *hour;
-- (IBAction)selfDetail:(id)sender;
+@property (strong, nonatomic) IBOutlet UIImageView *imageView;
+@property (strong, nonatomic) IBOutlet UILabel *nameLabel;
+@property (strong, nonatomic) IBOutlet UILabel *schoolLabel;
+@property (strong, nonatomic) IBOutlet UILabel *hourLabel;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+
 - (IBAction)LogOut:(id)sender;
+- (IBAction)SelfDetail:(id)sender;
 
 
 @end
